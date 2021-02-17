@@ -4,6 +4,7 @@ import { tblUserDocument, tbl_user } from '../schema/index';
 import { tbl_user_dto } from '../dto/index'
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as bcrypt from "bcrypt"
 
 @Injectable()
 export class TblUsersService implements IModelDbService<tbl_user, tbl_user_dto>{
@@ -34,6 +35,8 @@ export class TblUsersService implements IModelDbService<tbl_user, tbl_user_dto>{
     }
 
     async insert(entity: any): Promise<tbl_user> {
+        entity.password = await bcrypt.hash(entity.password, 10)
+
         const user_entity = new this.userModel(entity)
         return user_entity.save();
     }

@@ -1,21 +1,34 @@
-import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import { Request, Controller, Get, Inject, Post, UseGuards, UseInterceptors, Logger } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { stringify } from 'querystring';
+import { AuthenticationService } from '../database/services/authentication.service';
+import { TblUsersService } from '../database/services/tbl-users.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthenticationController {
 
+    @Inject(AuthenticationService)
+    authenticaionService: AuthenticationService
+
+    @Inject(TblUsersService)
+    userService: TblUsersService
+
+    logger = new Logger(AuthenticationController.name)
+
+    @UseGuards(LocalAuthGuard)
     @Post("login")
     @UseInterceptors(FileInterceptor("file"))
-    handleLogin(@Body() body){
-        if (body.username === "admin" && body.password === "123") 
-            return "login success"
-        return "login fail"
+    async handleLogin(@Request() req){
+        let result = await this.authenticaionService.login(req.user)
+        return result
     }
 
-    @Get("my-info")
-    handleGetMyInfo(){
-        return {
-            "your info" : "Bùi Xuân Thuỷ"
-        }
+    @UseGuards(JwtAuthGuard)
+    @Post("my-info")
+    async handleGetMyInfo(@Request() req){
+        let result = await this.userService.getOne(req.user.userId)
+        return result
     }
 }
