@@ -28,8 +28,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         console.log("connected users : ", this.users);
 
         this.clients.push(client);
-
-        // client.join("all");
     }
 
     handleDisconnect(client: any) {
