@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Inject, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Request, Body, Controller, Get, Inject, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { IModelDbService } from '../database/interface';
-import { tbl_user } from '../database/schema';
 import { TblUsersService } from '../database/services/tbl-users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
@@ -13,7 +12,9 @@ export class ManagerUsersController {
 
     @UseGuards(JwtAuthGuard)
     @Get("")
-    async getListUser(@Body() body){
+    async getListUser(@Request() req){
+        console.log("ala : ", req.user.userId)
+
         return this.UserDbService.getAll()
     }
 
