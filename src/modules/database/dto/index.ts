@@ -1,1 +1,1 @@
-export * from './tb_users.dto'
+export * from './tbl_users.dto'
