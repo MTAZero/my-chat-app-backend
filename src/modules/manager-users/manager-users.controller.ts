@@ -13,8 +13,6 @@ export class ManagerUsersController {
     @UseGuards(JwtAuthGuard)
     @Get("")
     async getListUser(@Request() req){
-        console.log("ala : ", req.user.userId)
-
         return this.UserDbService.getAll()
     }
 
