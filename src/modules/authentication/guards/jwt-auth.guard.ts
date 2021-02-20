@@ -23,8 +23,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         const request = context.switchToHttp().getRequest();
         const user = request.user;
 
-        console.log("user : ", user)
-
         return user.username === "admin";
     }
 

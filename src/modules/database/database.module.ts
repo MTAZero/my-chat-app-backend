@@ -6,7 +6,7 @@ import { TblRoomsService } from './services/tbl-rooms.service';
 import { TblUsersService } from './services/tbl-users.service';
 import { AuthenticationService } from './services/authentication.service';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from 'src/const/jwt.constant';
+import { jwtConstants } from 'src/const';
 
 @Module({
     imports: [
