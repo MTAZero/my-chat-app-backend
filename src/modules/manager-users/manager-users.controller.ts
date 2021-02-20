@@ -1,4 +1,4 @@
-import { Request, Body, Controller, Get, Inject, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Request, Body, Controller, Get, Inject, Post, UseGuards, UseInterceptors, Delete, Param } from '@nestjs/common';
 import { IModelDbService } from '../database/interface';
 import { TblUsersService } from '../database/services/tbl-users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -9,6 +9,35 @@ export class ManagerUsersController {
 
     @Inject(TblUsersService)
     UserDbService: IModelDbService<any, any>;
+
+    @UseGuards(JwtAuthGuard)
+    @Get("/:id")
+    async getOneUser(@Param() params){
+        let user = await this.UserDbService.getOne(params.id)
+
+        if (user === null)
+            return {
+                "statusCode": 400,
+                "message": "NotFound",
+            }
+
+        return {
+            "statusCode": 200,
+            "message": "success",
+            "user": user
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete("/:id")
+    async removeUser(@Param() params){
+        await this.UserDbService.remove(params.id)
+
+        return {
+            "statusCode": 200,
+            "message": "remove success"
+        }
+    }
 
     @UseGuards(JwtAuthGuard)
     @Get("")
@@ -22,4 +51,5 @@ export class ManagerUsersController {
     async insertUser(@Body() entity){
         return this.UserDbService.insert(entity)
     }
+
 }

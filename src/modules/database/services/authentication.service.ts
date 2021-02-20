@@ -28,8 +28,6 @@ export class AuthenticationService {
     }
 
     async validateUser(username: string, password: string): Promise<any> {
-        this.logger.debug(`check - ${username} - ${password}`);
-
         let user = await this.userModel.findOne({ username: username }).exec();
         if (!user)
             return {

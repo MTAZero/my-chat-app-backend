@@ -31,7 +31,7 @@ export class TblUsersService implements IModelDbService<tbl_user, tbl_user_dto>{
     }
 
     async remove(id: string) {
-        return this.userModel.remove(id)
+        return this.userModel.remove({ _id: id})
     }
 
     async insert(entity: any): Promise<tbl_user> {
