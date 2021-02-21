@@ -46,8 +46,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     handleMessage(client, data: any) {
         let user = client.user
 
-        console.log(`client : ${stringify(user)}`)
-
         data = {
             ...data,
             ...{
