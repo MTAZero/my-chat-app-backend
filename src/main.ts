@@ -3,13 +3,16 @@ import { AppModule } from './app.module';
 import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, {
-        logger: ['error', 'debug', 'verbose', 'log']
-    });
+    const app = await NestFactory.create(
+        AppModule,
+        // {
+        // logger: ['error', 'debug', 'verbose', 'log']
+        // }
+    );
 
     app.enableCors();
     app.useWebSocketAdapter(new WsAdapter(app));
 
-    await app.listen(3000);
+    await app.listen(3002);
 }
 bootstrap();

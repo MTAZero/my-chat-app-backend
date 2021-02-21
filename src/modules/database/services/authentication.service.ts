@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { tblUserDocument, tbl_user } from '../schema';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { TblUsersService } from './tbl-users.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -11,6 +12,7 @@ export class AuthenticationService {
         @InjectModel(tbl_user.name)
         private readonly userModel: Model<tblUserDocument>,
         private jwtService: JwtService,
+        private readonly userSerivce: TblUsersService
     ) {}
 
     logger = new Logger(AuthenticationService.name);
@@ -44,4 +46,14 @@ export class AuthenticationService {
             isValidate: false,
         };
     }
+
+    async verifyToken(token: string){
+        let data = await this.jwtService.decode(token)
+
+        let userId = data.sub;
+        let user = await this.userSerivce.getOne(userId);
+
+        return user
+    }
+
 }

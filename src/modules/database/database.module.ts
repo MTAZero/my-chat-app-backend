@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { tbl_user, UserSchema } from './schema';
+import { MessageSchema, tbl_messages, tbl_user, UserSchema } from './schema';
 import { TblMessageService } from './services/tbl-message.service';
 import { TblRoomsService } from './services/tbl-rooms.service';
 import { TblUsersService } from './services/tbl-users.service';
@@ -15,11 +15,15 @@ import { jwtConstants } from 'src/const';
                 name: tbl_user.name,
                 schema: UserSchema,
             },
+            {
+                name: tbl_messages.name,
+                schema: MessageSchema
+            }
         ]),
         JwtModule.register({
             secret: jwtConstants.secret,
             signOptions: {
-                expiresIn: '60m'
+                expiresIn: '1d'
             }
         })
     ],
