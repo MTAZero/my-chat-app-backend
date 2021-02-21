@@ -12,7 +12,7 @@ export class AuthenticationService {
         @InjectModel(tbl_user.name)
         private readonly userModel: Model<tblUserDocument>,
         private jwtService: JwtService,
-        private readonly userSerivce: TblUsersService
+        private readonly userSerivce: TblUsersService,
     ) {}
 
     logger = new Logger(AuthenticationService.name);
@@ -47,13 +47,16 @@ export class AuthenticationService {
         };
     }
 
-    async verifyToken(token: string){
-        let data = await this.jwtService.decode(token)
+    async verifyToken(token: string) {
+        try {
+            let data = await this.jwtService.decode(token);
 
-        let userId = data.sub;
-        let user = await this.userSerivce.getOne(userId);
+            let userId = data.sub;
+            let user = await this.userSerivce.getOne(userId);
 
-        return user
+            return user;
+        } catch {
+            return null;
+        }
     }
-
 }
