@@ -8,6 +8,7 @@ import { ManagerUsersController } from './modules/manager-users/manager-users.co
 import { ManagerUsersModule } from './modules/manager-users/manager-users.module';
 import { UploadController } from './modules/upload/upload.controller';
 import { UploadModule } from './modules/upload/upload.module';
+import { ManagerMessagesModule } from './modules/manager-messages/manager-messages.module';
 
 @Module({
     imports: [
@@ -18,8 +19,9 @@ import { UploadModule } from './modules/upload/upload.module';
         DatabaseModule,
         ManagerUsersModule,
         UploadModule,
+        ManagerMessagesModule,
     ],
-    providers: [ChatGateway],
+    providers: [ChatGateway]
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

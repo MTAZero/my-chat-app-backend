@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { tbl_message_dto } from '../dto';
 import { IModelDbService } from '../interface';
 import { tblMessageDocument, tbl_messages } from '../schema';
+import * as _ from "lodash"
 
 @Injectable()
 export class TblMessageService implements IModelDbService<tbl_messages, tbl_message_dto>  {
@@ -14,7 +15,14 @@ export class TblMessageService implements IModelDbService<tbl_messages, tbl_mess
     }
 
     async getAll(): Promise<tbl_messages[]> {
-        return await this.messageModel.find().exec()
+        let messages = await this.messageModel.find({}).populate("user", { fullname: 1, avatar: 1 }).sort({ timestamp: -1 }).lean().exec()
+
+        messages = _.map(messages, (item) => {
+            const user: any = item.user
+            return _.extend({}, item, { from: user.fullname })
+        })
+
+        return messages
     }
 
     async getOne(id: string): Promise<tbl_messages> {

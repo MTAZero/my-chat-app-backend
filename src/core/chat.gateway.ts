@@ -15,11 +15,14 @@ import { map } from 'rxjs/operators';
 import { Socket } from 'socket.io';
 import { JwtAuthGuard } from 'src/modules/authentication/guards/jwt-auth.guard';
 import { WsJwtGuard } from 'src/modules/authentication/guards/ws.guard';
+import { tbl_message_dto } from 'src/modules/database/dto';
 import { AuthenticationService } from 'src/modules/database/services/authentication.service';
+import { TblMessageService } from 'src/modules/database/services/tbl-message.service';
 import { Server } from 'ws';
 
 @WebSocketGateway(3001)
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway
+    implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
     private logger = new Logger(ChatGateway.name);
 
     @WebSocketServer() server: Server;
@@ -29,22 +32,25 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @Inject(AuthenticationService)
     authService: AuthenticationService;
 
+    @Inject(TblMessageService)
+    messageService: TblMessageService;
+
     afterInit(server: any) {
-        this.logger.debug(' Khởi tạo gateway thành công');
+        this.logger.debug('Khởi tạo gateway thành công');
     }
 
     @UseGuards(WsJwtGuard)
     async handleConnection(client: any, ...args: any[]) {
-        if (!client._protocol){
-            client.close()  
-            return; 
+        if (!client._protocol) {
+            client.close();
+            return;
         }
 
-        let token = client._protocol
-        let user = await this.authService.verifyToken(token)
+        let token = client._protocol;
+        let user = await this.authService.verifyToken(token);
 
-        if (!user){
-            client.close()
+        if (!user) {
+            client.close();
             return;
         }
 
@@ -64,7 +70,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     @UseGuards(WsJwtGuard)
     @SubscribeMessage('message')
-    handleMessage(client, data: any) {
+    async handleMessage(client, data: any) {
         let user = client.user;
 
         data = {
@@ -78,6 +84,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             event: 'msgToClient',
             data,
         };
+
+        let entity = new tbl_message_dto()
+        entity.user = user 
+        entity.content = data.content
+
+        await this.messageService.insert(entity)
 
         for (let clientz of this.clients) {
             clientz.send(JSON.stringify(messageToBroardCast));
