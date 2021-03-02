@@ -18,7 +18,10 @@ import { WsJwtGuard } from 'src/modules/authentication/guards/ws.guard';
 import { tbl_message_dto } from 'src/modules/database/dto';
 import { AuthenticationService } from 'src/modules/database/services/authentication.service';
 import { TblMessageService } from 'src/modules/database/services/tbl-message.service';
+import { TblUsersService } from 'src/modules/database/services/tbl-users.service';
 import { Server } from 'ws';
+
+import * as _ from 'lodash';
 
 @WebSocketGateway(3001)
 export class ChatGateway
@@ -34,6 +37,9 @@ export class ChatGateway
 
     @Inject(TblMessageService)
     messageService: TblMessageService;
+
+    @Inject(TblUsersService)
+    userService: TblUsersService;
 
     afterInit(server: any) {
         this.logger.debug('Khởi tạo gateway thành công');
@@ -73,23 +79,25 @@ export class ChatGateway
     async handleMessage(client, data: any) {
         let user = client.user;
 
+        let entity = new tbl_message_dto();
+        entity.user = user;
+        entity.content = data.content;
+
+        let message = await this.messageService.insert(entity);
+        let _message = await this.messageService.getOne(message._id + '');
+
         data = {
             ...data,
             ...{
                 from: user.fullname,
             },
+            ..._message,
         };
 
         let messageToBroardCast = {
             event: 'msgToClient',
             data,
         };
-
-        let entity = new tbl_message_dto()
-        entity.user = user 
-        entity.content = data.content
-
-        await this.messageService.insert(entity)
 
         for (let clientz of this.clients) {
             clientz.send(JSON.stringify(messageToBroardCast));

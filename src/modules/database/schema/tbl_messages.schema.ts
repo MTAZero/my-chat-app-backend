@@ -6,6 +6,8 @@ export type tblMessageDocument = tbl_messages & Document;
 
 @Schema()
 export class tbl_messages {
+    _id: string
+
     @Prop({ type: Types.ObjectId, ref: tbl_user.name })
     user: Types.ObjectId;
 
